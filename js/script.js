@@ -12,13 +12,17 @@ fetchresult.then(
         
         length_of_array=array_json.length;
         console.log(length_of_array);
-        let container_main=document.createElement("div")
-        container_main.setAttribute("class","container-fluid")
+
         
-        let row_for_column=document.createElement("div")
-        row_for_column.setAttribute("class","row justify-content-center")
-        container_main.appendChild(row_for_column)
+
+        let container_main=document.createElement("div")
+        container_main.className="container"
         document.body.appendChild(container_main)
+
+        let row_for_column=document.createElement("div")
+        row_for_column.className="row"
+        container_main.appendChild(row_for_column)
+        
 
         for(let i=0;i<length_of_array;i++)
             {   
@@ -69,21 +73,79 @@ fetchresult.then(
                 btn_click.textContent = "Click to Check Weather";
 
                 btn_click.addEventListener("click",function(){
-                 
-                    const fetchweather=fetch("https://openweathermap.org/")
-                    console.log(fetchweather)
-                    fetchweather.then(
-                        function(response){
-                            console.log("inside fullfil handler of weather");
-                            return response.json();
-                        }
-                    ).then(
-                        function(data1){
-                            let weather_json=data1;
-                            console.log(weather_json);
-                })
+                    country_name=array_json[i].name.common;
+                    app_id='f8b6f89980bad6bc5226a51730865f16'
+                    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${country_name}&APPID=${app_id}`;  // Replace with your API endpoint
 
-            });
+                fetch(apiUrl)
+                        .then(
+                            function(response) 
+                            {
+                                console.log(response)
+                                return response.json()
+                            })
+                        .then(
+                            function(dataset){
+                                let weather_json=dataset;
+                                let temperature=dataset.main.temp
+                                let temp_min=dataset.main.temp_min
+                                let temp_max=dataset.main.temp_max
+                                let windspeed=dataset.wind.speed
+                                let weather_desc=dataset.weather[0].description
+
+                                let box_page=document.createElement("div")
+                                box_page.setAttribute("class","box_page d-flex flex-column align-items-center") 
+                                div_section.appendChild(box_page)
+
+                                let box_content=document.createElement("div")
+                                box_content.setAttribute("class","box_class d-flex align-items-center ") 
+                                box_content.setAttribute("id","box_class_id") 
+                                box_page.appendChild(box_content);
+                                box_content.textContent = `Temp: ${temperature} <=${temp_min} <=${temp_max}  Description:${weather_desc}  
+                                  Wind speed:${windspeed}`;
+                                box_content.display='flex align-items-center justify-content-center'
+
+                                let box_close_btn=document.createElement("div")
+                                box_close_btn.setAttribute("class","box_close_btn btn btn-sm btn-primary d-flex align-items-center ") 
+                                box_page.appendChild(box_close_btn)
+                                box_close_btn.textContent = "Ok";
+
+                                box_close_btn.addEventListener("click",function()
+                                {   
+                                console.log("button click close")
+                                box_page.style.setProperty('display', 'none', 'important');
+                                })
+
+                            })
+                        .catch(
+                            function(errordata){
+                                let box_page=document.createElement("div")
+                                box_page.setAttribute("class","box_page d-flex flex-column align-items-center ") 
+                                div_section.appendChild(box_page)
+                                let box_content=document.createElement("div")
+                                box_content.setAttribute("class","box_class d-flex align-items-center ") 
+                                box_content.setAttribute("id","box_class_id") 
+                                box_page.appendChild(box_content);
+                                box_content.textContent = 'City not found';
+                                box_content.display='flex align-items-center justify-content-center'
+                                let box_close_btn=document.createElement("div")
+                                box_close_btn.setAttribute("class","box_close_btn btn btn-sm btn-primary d-flex align-items-center ") 
+                                box_page.appendChild(box_close_btn)
+                                box_close_btn.textContent = "Ok";
+                                box_close_btn.addEventListener("click",function()
+                                {   
+                                console.log("button clicked close")
+                                box_page.style.setProperty('display', 'none', 'important');
+                                })
+
+                            }
+                        )
+                    
+                    
+                    
+                });
+
+            
         console.log("DoM created")
 
         }
